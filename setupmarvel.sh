@@ -8,6 +8,7 @@
 # You need to run this script in that repository.
 
 docker exec -it elasticsearch bin/plugin install license
+docker exec -it elasticsearch bin/plugin install mobz/elasticsearch-head
 echo y | docker exec -i elasticsearch bin/plugin install marvel-agent
 
 for i in $(seq 1 3); do
