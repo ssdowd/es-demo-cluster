@@ -1,5 +1,8 @@
 version: "2"
 
+volumes:
+  esdata:
+  
 services:
   elasticsearch:
     container_name: elasticsearch
@@ -15,6 +18,8 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9200:9200"
+    volumes:
+      - ./data/client:/usr/share/elasticsearch/data
   data01:
     container_name: data01
     extends:
@@ -28,6 +33,8 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9201:9200"
+    volumes:
+      - ./data/data01:/usr/share/elasticsearch/data
   data02:
     container_name: data02
     extends:
@@ -41,6 +48,8 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9202:9200"
+    volumes:
+      - ./data/data02:/usr/share/elasticsearch/data
   data03:
     container_name: data03
     extends:
@@ -54,6 +63,8 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9203:9200"
+    volumes:
+      - ./data/data03:/usr/share/elasticsearch/data
   data04:
     container_name: data04
     extends:
@@ -67,6 +78,8 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9204:9200"
+    volumes:
+      - ./data/data04:/usr/share/elasticsearch/data
   data05:
     container_name: data05
     extends:
@@ -80,6 +93,8 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9205:9200"
+    volumes:
+      - ./data/data05:/usr/share/elasticsearch/data
   master01:
     container_name: master01
     extends:
@@ -95,6 +110,8 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9210:9200"
+    volumes:
+      - ./data/master01:/usr/share/elasticsearch/data
   master02:
     container_name: master02
     extends:
@@ -110,6 +127,8 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9211:9200"
+    volumes:
+      - ./data/master02:/usr/share/elasticsearch/data
   master03:
     container_name: master03
     extends:
@@ -125,11 +144,11 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9212:9200"
+    volumes:
+      - ./data/master03:/usr/share/elasticsearch/data
   kibana:
     container_name: kibana
-    extends:
-      file: common.yml
-      service: kibana
+    build: images/kibana
     command: kibana --elasticsearch 'http://elasticsearch:9200'
     depends_on:
       - elasticsearch

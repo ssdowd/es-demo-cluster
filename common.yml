@@ -5,5 +5,3 @@ services:
     image: elasticsearch:2.3.3
     security_opt:
       - seccomp:unconfined
-  kibana:
-    image: mcascallares/kibana-on-steroids:latest
