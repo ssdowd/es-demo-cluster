@@ -1,4 +1,4 @@
-FROM ingensi/dockerbeat:1.0.0-rc1
+FROM ingensi/dockerbeat:1.0.0-rc2
 MAINTAINER Matias Cascallares <matiascas@gmail.com>
 
 LABEL co.elastic.release-date="2016-02-11"
