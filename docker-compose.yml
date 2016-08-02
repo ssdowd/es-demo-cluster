@@ -18,8 +18,6 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9200:9200"
-    volumes:
-      - ./data/client:/usr/share/elasticsearch/data
   data01:
     container_name: data01
     extends:
@@ -31,10 +29,11 @@ services:
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - --node.box_type=ssd
     ports:
       - "9201:9200"
-    volumes:
-      - ./data/data01:/usr/share/elasticsearch/data
+#    volumes:
+#      - ./data/data01:/usr/share/elasticsearch/data
   data02:
     container_name: data02
     extends:
@@ -46,10 +45,11 @@ services:
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - --node.box_type=ssd
     ports:
       - "9202:9200"
-    volumes:
-      - ./data/data02:/usr/share/elasticsearch/data
+#    volumes:
+#      - ./data/data02:/usr/share/elasticsearch/data
   data03:
     container_name: data03
     extends:
@@ -61,10 +61,11 @@ services:
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - --node.box_type=spinning
     ports:
       - "9203:9200"
-    volumes:
-      - ./data/data03:/usr/share/elasticsearch/data
+#    volumes:
+#      - ./data/data03:/usr/share/elasticsearch/data
   data04:
     container_name: data04
     extends:
@@ -76,10 +77,11 @@ services:
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - --node.box_type=spinning
     ports:
       - "9204:9200"
-    volumes:
-      - ./data/data04:/usr/share/elasticsearch/data
+#    volumes:
+#      - ./data/data04:/usr/share/elasticsearch/data
   data05:
     container_name: data05
     extends:
@@ -91,10 +93,11 @@ services:
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - --node.box_type=spinning
     ports:
-      - "9205:9200"
-    volumes:
-      - ./data/data05:/usr/share/elasticsearch/data
+      - "59205:9200"
+#    volumes:
+#      - ./data/data05:/usr/share/elasticsearch/data
   master01:
     container_name: master01
     extends:
@@ -110,8 +113,6 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9210:9200"
-    volumes:
-      - ./data/master01:/usr/share/elasticsearch/data
   master02:
     container_name: master02
     extends:
@@ -127,8 +128,6 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9211:9200"
-    volumes:
-      - ./data/master02:/usr/share/elasticsearch/data
   master03:
     container_name: master03
     extends:
@@ -144,8 +143,6 @@ services:
       - -Des.network.host=_eth0_
     ports:
       - "9212:9200"
-    volumes:
-      - ./data/master03:/usr/share/elasticsearch/data
   kibana:
     container_name: kibana
     build: images/kibana
