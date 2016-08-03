@@ -9,6 +9,7 @@
 
 docker exec -it elasticsearch bin/plugin install license
 docker exec -it elasticsearch bin/plugin install mobz/elasticsearch-head
+docker exec -it elasticsearch bin/plugin install lmenezes/elasticsearch-kopf/2.x
 echo y | docker exec -i elasticsearch bin/plugin install marvel-agent
 
 for i in $(seq 1 3); do
@@ -16,6 +17,7 @@ for i in $(seq 1 3); do
   echo $host
   docker exec -it ${host} bin/plugin install license
   docker exec -it ${host} bin/plugin install mobz/elasticsearch-head
+  docker exec -it ${host} bin/plugin install lmenezes/elasticsearch-kopf/2.x
   echo y | docker exec -i ${host} bin/plugin install marvel-agent
   echo ${host} done
 done
@@ -25,6 +27,7 @@ for i in $(seq 1 5); do
   echo ${host}
   docker exec -it ${host} bin/plugin install license
   docker exec -it ${host} bin/plugin install mobz/elasticsearch-head
+  docker exec -it ${host} bin/plugin install lmenezes/elasticsearch-kopf/2.x
   echo y | docker exec -i ${host} bin/plugin install marvel-agent
   echo ${host} done
 done
