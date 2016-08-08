@@ -8,10 +8,32 @@
 actions:
   1:
     action: allocation
-    description: Move old indices from ssd to spinning
+    description: >-
+      Move old indices from 'ssd' to 'spinning' based on index
+      name prefix (twitter-) and age based on creation date (more than 2
+      days in this example).
     options:
       key: box_type
       value: spinning
+      continue_if_exception: True
+      disable_action: False
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: twitter-
+      exclude:
+    - filtertype: age
+      source: creation_date
+      direction: older
+      unit: days
+      unit_count: 2
+      exclude:
+  2:
+    action: close
+    description: Close indices over X units old
+    options:
+      delete_aliases: false
+      timeout_override:
       continue_if_exception: False
       disable_action: False
     filters:
@@ -22,25 +44,6 @@ actions:
     - filtertype: age
       source: creation_date
       direction: older
-      unit: minutes
-      unit_count: 60
-      exclude:
-  2:
-    action: close
-    description: Close indices over 2 hours old (disabled - test only)
-    options:
-      delete_aliases: false
-      timeout_override:
-      continue_if_exception: False
-      disable_action: True
-    filters:
-    - filtertype: pattern
-      kind: prefix
-      value: twitter-
-      exclude:
-    - filtertype: age
-      source: creation_date
-      direction: older
-      unit: minutes
-      unit_count: 120
+      unit: days
+      unit_count: 5
       exclude:
