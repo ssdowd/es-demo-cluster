@@ -26,7 +26,7 @@ actions:
       source: creation_date
       direction: older
       unit: days
-      unit_count: 2
+      unit_count: 1
       exclude:
   2:
     action: close
