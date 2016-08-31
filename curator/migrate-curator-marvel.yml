@@ -1,0 +1,69 @@
+---
+# Remember, leave a key empty if there is no value.  None will be a string,
+# not a Python "NoneType"
+#
+# Also remember that all examples have 'disable_action' set to True.  If you
+# want to use this action as a template, be sure to set this to False after
+# copying it.
+actions:
+  1:
+    action: allocation
+    description: >-
+      Move old indices from 'ssd' to 'spinning' based on index
+      name prefix (twitter-) and age based on creation date (more than 2
+      days in this example).
+    options:
+      key: box_type
+      value: spinning
+      continue_if_exception: True
+      disable_action: False
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: .marvel-es-
+      exclude: .marvel-es-data-1
+    - filtertype: age
+      source: creation_date
+      direction: older
+      unit: days
+      unit_count: 2
+      exclude:
+  2:
+    action: forcemerge
+    description: Optimize indices over X units old
+    options:
+      max_num_segments: 3
+      timeout_override:
+      delay: 30
+      continue_if_exception: False
+      disable_action: False
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: .marvel-es-
+      exclude: .marvel-es-data-1
+    - filtertype: age
+      source: creation_date
+      direction: older
+      unit: days
+      unit_count: 2
+      exclude:
+  3:
+    action: close
+    description: Close indices over X units old
+    options:
+      delete_aliases: false
+      timeout_override:
+      continue_if_exception: False
+      disable_action: False
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: .marvel-es-
+      exclude: .marvel-es-data-1
+    - filtertype: age
+      source: creation_date
+      direction: older
+      unit: days
+      unit_count: 5
+      exclude:

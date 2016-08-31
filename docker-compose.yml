@@ -1,6 +1,7 @@
 version: "2"
 
 volumes:
+  esbackup:
   esdata01:
   esdata02:
   esdata03:
@@ -28,15 +29,20 @@ services:
       file: common.yml
       service: elastic
     command:
+      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
+    command:
       - elasticsearch
       - -Des.node.name=data01
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - -Des.path.repo=/usr/share/elasticsearch/esbackup
       - --node.box_type=ssd
+      - --node.container=docker
     ports:
       - "9201:9200"
     volumes:
+      - esbackup:/usr/share/elasticsearch/esbackup
       - esdata01:/usr/share/elasticsearch/data
   data02:
     container_name: data02
@@ -44,15 +50,20 @@ services:
       file: common.yml
       service: elastic
     command:
+      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
+    command:
       - elasticsearch
       - -Des.node.name=data02
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - -Des.path.repo=/usr/share/elasticsearch/esbackup
       - --node.box_type=ssd
+      - --node.container=docker
     ports:
       - "9202:9200"
     volumes:
+      - esbackup:/usr/share/elasticsearch/esbackup
       - esdata02:/usr/share/elasticsearch/data
   data03:
     container_name: data03
@@ -60,15 +71,20 @@ services:
       file: common.yml
       service: elastic
     command:
+      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
+    command:
       - elasticsearch
       - -Des.node.name=data03
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - -Des.path.repo=/usr/share/elasticsearch/esbackup
       - --node.box_type=spinning
+      - --node.container=docker
     ports:
       - "9203:9200"
     volumes:
+      - esbackup:/usr/share/elasticsearch/esbackup
       - esdata03:/usr/share/elasticsearch/data
   data04:
     container_name: data04
@@ -76,15 +92,20 @@ services:
       file: common.yml
       service: elastic
     command:
+      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
+    command:
       - elasticsearch
       - -Des.node.name=data04
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - -Des.path.repo=/usr/share/elasticsearch/esbackup
       - --node.box_type=spinning
+      - --node.container=docker
     ports:
       - "9204:9200"
     volumes:
+      - esbackup:/usr/share/elasticsearch/esbackup
       - esdata04:/usr/share/elasticsearch/data
   data05:
     container_name: data05
@@ -92,21 +113,28 @@ services:
       file: common.yml
       service: elastic
     command:
+      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
+    command:
       - elasticsearch
       - -Des.node.name=data05
       - -Des.node.master=false
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
       - -Des.network.host=_eth0_
+      - -Des.path.repo=/usr/share/elasticsearch/esbackup
       - --node.box_type=spinning
+      - --node.container=docker
     ports:
       - "19205:9200"
     volumes:
+      - esbackup:/usr/share/elasticsearch/esbackup
       - esdata05:/usr/share/elasticsearch/data
   master01:
     container_name: master01
     extends:
       file: common.yml
       service: elastic
+    command:
+      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
     command:
       - elasticsearch
       - -Des.node.name=master01
@@ -115,13 +143,18 @@ services:
       - -Des.discovery.zen.ping.unicast.hosts=master02,master03
       - -Des.discovery.zen.minimum_master_nodes=2
       - -Des.network.host=_eth0_
+      - -Des.path.repo=/usr/share/elasticsearch/esbackup
     ports:
       - "9210:9200"
+    volumes:
+      - esbackup:/usr/share/elasticsearch/esbackup
   master02:
     container_name: master02
     extends:
       file: common.yml
       service: elastic
+    command:
+      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
     command:
       - elasticsearch
       - -Des.node.name=master02
@@ -130,13 +163,18 @@ services:
       - -Des.discovery.zen.ping.unicast.hosts=master01,master03
       - -Des.discovery.zen.minimum_master_nodes=2
       - -Des.network.host=_eth0_
+      - -Des.path.repo=/usr/share/elasticsearch/esbackup
     ports:
       - "9211:9200"
+    volumes:
+      - esbackup:/usr/share/elasticsearch/esbackup
   master03:
     container_name: master03
     extends:
       file: common.yml
       service: elastic
+    command:
+      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
     command:
       - elasticsearch
       - -Des.node.name=master03
@@ -145,8 +183,11 @@ services:
       - -Des.discovery.zen.ping.unicast.hosts=master01,master02
       - -Des.discovery.zen.minimum_master_nodes=2
       - -Des.network.host=_eth0_
+      - -Des.path.repo=/usr/share/elasticsearch/esbackup
     ports:
       - "19212:9200"
+    volumes:
+      - esbackup:/usr/share/elasticsearch/esbackup
   kibana:
     container_name: kibana
     build: images/kibana
