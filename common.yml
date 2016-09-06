@@ -2,6 +2,6 @@ version: "2"
 
 services:
   elastic:
-    image: elasticsearch:2.3.3
+    image: elasticsearch:2.4
     security_opt:
       - seccomp:unconfined

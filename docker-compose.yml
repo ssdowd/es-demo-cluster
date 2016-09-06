@@ -7,6 +7,7 @@ volumes:
   esdata03:
   esdata04:
   esdata05:
+  esmonitor:
   
 services:
   elasticsearch:
@@ -188,6 +189,32 @@ services:
       - "19212:9200"
     volumes:
       - esbackup:/usr/share/elasticsearch/esbackup
+  monitor:
+    container_name: monitor
+    extends:
+      file: common.yml
+      service: elastic
+    command:
+      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
+    command:
+      - elasticsearch
+      - -Des.cluster.name=monitor
+      - -Des.node.name=monitor
+      - -Des.node.master=true
+      - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
+      - -Des.network.host=_eth0_
+    ports:
+      - "29200:9200"
+    volumes:
+      - esmonitor:/usr/share/elasticsearch/data
+  mkibana:
+    container_name: mkibana
+    build: images/kibana
+    command: kibana --elasticsearch 'http://monitor:9200'
+    depends_on:
+      - elasticsearch
+    ports:
+      - "15601:5601"
   kibana:
     container_name: kibana
     build: images/kibana
