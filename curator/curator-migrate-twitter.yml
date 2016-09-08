@@ -10,8 +10,8 @@ actions:
     action: allocation
     description: >-
       Move old indices from 'ssd' to 'spinning' based on index
-      name prefix (twitter-) and age based on creation date (more than 2
-      days in this example).
+      name prefix (twitter-) and age based on date parsed from index name
+      (more than 30 days in this example).
     options:
       key: box_type
       value: spinning
@@ -23,11 +23,12 @@ actions:
       value: twitter-
       exclude:
     - filtertype: age
-      source: creation_date
+      source: name
       direction: older
+      timestring: '%Y.%m.%d.%H'
       unit: days
-      unit_count: 1
-      exclude:
+      unit_count: 30
+      exclude: False
   2:
     action: close
     description: Close indices over X units old
@@ -45,5 +46,5 @@ actions:
       source: creation_date
       direction: older
       unit: days
-      unit_count: 5
+      unit_count: 390
       exclude:
