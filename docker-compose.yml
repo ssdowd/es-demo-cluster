@@ -1,235 +1,80 @@
-version: "2"
+version: '2'
+services:
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.2.0
+    container_name: elasticsearch1
+    environment:
+      - cluster.name=docker-cluster
+      - node.name=esrch1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    mem_limit: 1g
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.2.0
+    environment:
+      - cluster.name=docker-cluster
+      - node.name=esrch2
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    mem_limit: 1g
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.2.0
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch1:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme
+    links:
+      - elasticsearch1:elasticsearch
+    ports:
+      - 5601:5601
+    networks:
+      - esnet
+  cerebro:
+    image: yannart/cerebro:latest
+    links:
+      - elasticsearch1:elasticsearch
+    ports:
+      - 9000:9000
+    networks:
+      - esnet
+    volumes:
+      - ./cerebro.conf:/opt/cerebro-0.5.0/conf/application.conf
 
 volumes:
-  esbackup:
-  esdata01:
-  esdata02:
-  esdata03:
-  esdata04:
-  esdata05:
-  esmonitor:
-  
-services:
-  elasticsearch:
-    container_name: elasticsearch
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - elasticsearch
-      - -Des.node.name=elasticsearch
-      - -Des.node.master=false
-      - -Des.node.data=false
-      - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
-      - -Des.network.host=_eth0_
-    ports:
-      - "9200:9200"
-  data01:
-    container_name: data01
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
-    command:
-      - elasticsearch
-      - -Des.node.name=data01
-      - -Des.node.master=false
-      - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
-      - -Des.network.host=_eth0_
-      - -Des.path.repo=/usr/share/elasticsearch/esbackup
-      - --node.box_type=ssd
-      - --node.container=docker
-    ports:
-      - "9201:9200"
-    volumes:
-      - esbackup:/usr/share/elasticsearch/esbackup
-      - esdata01:/usr/share/elasticsearch/data
-  data02:
-    container_name: data02
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
-    command:
-      - elasticsearch
-      - -Des.node.name=data02
-      - -Des.node.master=false
-      - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
-      - -Des.network.host=_eth0_
-      - -Des.path.repo=/usr/share/elasticsearch/esbackup
-      - --node.box_type=ssd
-      - --node.container=docker
-    ports:
-      - "9202:9200"
-    volumes:
-      - esbackup:/usr/share/elasticsearch/esbackup
-      - esdata02:/usr/share/elasticsearch/data
-  data03:
-    container_name: data03
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
-    command:
-      - elasticsearch
-      - -Des.node.name=data03
-      - -Des.node.master=false
-      - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
-      - -Des.network.host=_eth0_
-      - -Des.path.repo=/usr/share/elasticsearch/esbackup
-      - --node.box_type=spinning
-      - --node.container=docker
-    ports:
-      - "9203:9200"
-    volumes:
-      - esbackup:/usr/share/elasticsearch/esbackup
-      - esdata03:/usr/share/elasticsearch/data
-  data04:
-    container_name: data04
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
-    command:
-      - elasticsearch
-      - -Des.node.name=data04
-      - -Des.node.master=false
-      - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
-      - -Des.network.host=_eth0_
-      - -Des.path.repo=/usr/share/elasticsearch/esbackup
-      - --node.box_type=spinning
-      - --node.container=docker
-    ports:
-      - "9204:9200"
-    volumes:
-      - esbackup:/usr/share/elasticsearch/esbackup
-      - esdata04:/usr/share/elasticsearch/data
-  data05:
-    container_name: data05
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
-    command:
-      - elasticsearch
-      - -Des.node.name=data05
-      - -Des.node.master=false
-      - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
-      - -Des.network.host=_eth0_
-      - -Des.path.repo=/usr/share/elasticsearch/esbackup
-      - --node.box_type=spinning
-      - --node.container=docker
-    ports:
-      - "19205:9200"
-    volumes:
-      - esbackup:/usr/share/elasticsearch/esbackup
-      - esdata05:/usr/share/elasticsearch/data
-  master01:
-    container_name: master01
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
-    command:
-      - elasticsearch
-      - -Des.node.name=master01
-      - -Des.node.data=false
-      - -Des.node.client=false
-      - -Des.discovery.zen.ping.unicast.hosts=master02,master03
-      - -Des.discovery.zen.minimum_master_nodes=2
-      - -Des.network.host=_eth0_
-      - -Des.path.repo=/usr/share/elasticsearch/esbackup
-    ports:
-      - "9210:9200"
-    volumes:
-      - esbackup:/usr/share/elasticsearch/esbackup
-  master02:
-    container_name: master02
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
-    command:
-      - elasticsearch
-      - -Des.node.name=master02
-      - -Des.node.data=false
-      - -Des.node.client=false
-      - -Des.discovery.zen.ping.unicast.hosts=master01,master03
-      - -Des.discovery.zen.minimum_master_nodes=2
-      - -Des.network.host=_eth0_
-      - -Des.path.repo=/usr/share/elasticsearch/esbackup
-    ports:
-      - "9211:9200"
-    volumes:
-      - esbackup:/usr/share/elasticsearch/esbackup
-  master03:
-    container_name: master03
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
-    command:
-      - elasticsearch
-      - -Des.node.name=master03
-      - -Des.node.data=false
-      - -Des.node.client=false
-      - -Des.discovery.zen.ping.unicast.hosts=master01,master02
-      - -Des.discovery.zen.minimum_master_nodes=2
-      - -Des.network.host=_eth0_
-      - -Des.path.repo=/usr/share/elasticsearch/esbackup
-    ports:
-      - "19212:9200"
-    volumes:
-      - esbackup:/usr/share/elasticsearch/esbackup
-  monitor:
-    container_name: monitor
-    extends:
-      file: common.yml
-      service: elastic
-    command:
-      - /bin/chown elasticsearch:elasticsearch /usr/share/elasticsearch/esbackup
-    command:
-      - elasticsearch
-      - -Des.cluster.name=monitor
-      - -Des.node.name=monitor
-      - -Des.node.master=true
-      - -Des.discovery.zen.ping.unicast.hosts=master01,master02,master03
-      - -Des.network.host=_eth0_
-    ports:
-      - "29200:9200"
-    volumes:
-      - esmonitor:/usr/share/elasticsearch/data
-  mkibana:
-    container_name: mkibana
-    build: images/kibana
-    command: kibana --elasticsearch 'http://monitor:9200'
-    depends_on:
-      - elasticsearch
-    ports:
-      - "15601:5601"
-  kibana:
-    container_name: kibana
-    build: images/kibana
-    command: kibana --elasticsearch 'http://elasticsearch:9200'
-    depends_on:
-      - elasticsearch
-    ports:
-      - "5601:5601"
-  dockerbeat:
-    container_name: dockerbeat
-    build: images/dockerbeat
-    environment:
-      ELASTICSEARCH_HOST: elasticsearch
-      ELASTICSEARCH_PORT: 9200
-    depends_on:
-      - elasticsearch
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+  esdata1:
+    driver: local
+  esdata2:
+    driver: local
+
+networks:
+  esnet:
+    driver: bridge
